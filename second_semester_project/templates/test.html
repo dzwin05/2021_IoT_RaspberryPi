@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script type="text/javascript">
+    let confirmed = prompt("오늘 날씨가 좋나요", "예");
+    let interval = setInterval(parseStr, 1000);
+    function parseStr(){
+      let items;
+      fetch("/str")
+      .then((response) => response.text())
+      .then((data) => (items = JSON.parse(data)))
+      .then(() => {
+        for (let i = 0; i < items.length; i++){
+          var div = document.createElement("div");
+          div.append(items[i]);
+          document.body.appendChild(div);
+        }
+      });
+    }
+  </script>
+</body>
+</html>

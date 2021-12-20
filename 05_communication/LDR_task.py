@@ -1,0 +1,37 @@
+import spidev
+import RPi.GPIO as GPIO
+import time
+
+#SPI 인스턴트 생성 
+spi = spidev.SpiDev()
+
+#SPI 통신 시작
+spi.open(0, 0) #bus : 0, dev(장치 번호):0  (CE0:0, CE1:1)
+
+#SPI 통신 최대 속도 설정
+spi.max_speed_hz = 1000000
+
+# 0~7까지 채널에서 SPI 데이터 읽기
+def analog_read(channel):
+  ret = spi.xfer2([1, (8 + channel) << 4, 0])
+  adc_out = ((ret[1] & 3) << 8) + ret[2]
+  return adc_out
+
+
+# LED 설정
+LED_PIN = 4
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(LED_PIN, GPIO.OUT)
+
+try:
+    while True:
+      ldr_value = analog_read(0)
+      print("LDR Value : %d" % ldr_value )
+      time.sleep(0.05)
+      if ldr_value < 512 :
+        GPIO.output(LED_PIN, GPIO.HIGH)
+      else :
+        GPIO.output(LED_PIN, GPIO.LOW)
+
+finally : 
+    spi.close()
